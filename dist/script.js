@@ -1,6 +1,67 @@
-d3.select("body")
-  .append("p")
-  .text("Hello world");
+const w = 800;
+const h = 500;
+const padding = 30;
+
+// 仮
+const dataset = [100, 200, 300]
+
+// const dataset = { "data" : [
+//   [
+//     "1947-01-01",
+//     243.1
+//     ],
+//     [
+//     "1947-04-01",
+//     246.3
+//     ],
+//     [
+//     "1947-07-01",
+//     250.1
+//     ]
+// ]}
+
+const xScale = d3.scaleLinear()
+                 .domain([0, 300])
+                 .range([padding, w - padding]);
+
+const yScale = d3.scaleLinear()
+                 .domain([0, 400])
+                 .range([h - padding, padding]);
+
+const svg = d3.select("body")
+              .append("svg")
+              .attr("width", w)
+              .attr("height", h);
+
+svg.selectAll("rect")
+   .data(dataset)
+   .enter()
+   .append("rect")
+   .attr("class", "bar") // required for the fcc test
+   .attr("data-date", (d, i) => i * 10 + padding) // for the fcc test
+   .attr("x", (d, i) => i * 10 + padding)
+   .attr("data-gdp", (d, i) => (h - padding) - d) // for the fcc test
+   .attr("y", (d, i) => (h - padding) - d) // 下端にそろえる
+   .attr("width", 8)
+   .attr("height", (d) => d)
+   .attr("fill", "navy")
+   .append("title") // Tooltip
+   .text("data-date");
+
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
+
+svg.append("g")
+   .attr("transform", "translate(0," + (h - padding) + ")")
+   .attr("id", "x-axis") // required for the fcc test
+   .call(xAxis);
+
+svg.append("g")
+   .attr("transform", "translate(" + padding + ", 0)")
+   .attr("id", "y-axis") // required for the fcc test
+   .call(yAxis);
+
+
 
 // !! IMPORTANT README:
 
