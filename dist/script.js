@@ -30,18 +30,41 @@ function drawChart(dataset) {
   //   ["1947-07-01", 250.1]
   // ];
 
-  const w = 800;
+  dataset.sort(function(a, b){
+    // sort by date
+    return (a[0] < b[0] ? -1 : 1);
+  });
+
+  // Width and height of the svg area
+  const w = 1000;
   const h = 500;
-  const padding = 30;
+  const padding = 50;
+
+  // width of the each bar
+  const bar_w = 3;
+  const bar_p = 1;
+
+  // Min and max value of the date and GDP
+  // Use these values to define the domain of scales
+  const minX = 0
+  const maxX = dataset.length
+  const minY = d3.min(dataset, (d) => d[1])
+  const maxY = d3.max(dataset, (d) => d[1])
+  console.log(minX);
+  console.log(maxX);
+  console.log(minY);
+  console.log(maxY);
 
   // data-date
   const xScale = d3.scaleLinear()
-                   .domain([0, 300])
+                   .domain([minX, maxX])
                    .range([padding, w - padding]);
 
   // data-gdp
+  // When you set the range for the y coordinates, the higher value (height minus padding) is the first argument, and the lower value is the second argument.
+  // The same for domain. The higher value comes first. ???
   const yScale = d3.scaleLinear()
-                   .domain([0, 400])
+                   .domain([0, maxY])
                    .range([h - padding, padding]);
 
   const svg = d3.select("body")
@@ -54,15 +77,18 @@ function drawChart(dataset) {
      .enter()
      .append("rect")
      .attr("class", "bar") // required for the fcc test
-     .attr("data-date", (d, i) => i * 10 + padding) // for the fcc test
-     .attr("x", (d, i) => i * 10 + padding)
-     .attr("data-gdp", (d, i) => (h - padding) - d) // for the fcc test
-     .attr("y", (d, i) => (h - padding) - d) // 下端にそろえる
-     .attr("width", 8)
-     .attr("height", (d) => d)
-     .attr("fill", "navy")
+     .attr("x", (d, i) => i * bar_w + padding)
+     .attr("y", (d, i) => {
+        return h - yScale(d[1])
+      }) // 下端にそろえる
+     .attr("width", bar_w - bar_p)
+     .attr("height", (d) => {
+        return yScale(d[1]) - padding;
+     })
+     .attr("data-date", (d) => d[0])
+     .attr("data-gdp", (d) => d[1])
      .append("title") // Tooltip
-     .text("data-date");
+     .text((d) => d[0]);
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
