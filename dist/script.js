@@ -78,17 +78,17 @@ function drawChart(dataset) {
      .append("rect")
      .attr("class", "bar") // required for the fcc test
      .attr("x", (d, i) => i * bar_w + padding)
-     .attr("y", (d, i) => {
-        return h - yScale(d[1])
+     .attr("y", (d) => {
+        return yScale(d[1])
       }) // 下端にそろえる
      .attr("width", bar_w - bar_p)
      .attr("height", (d) => {
-        return yScale(d[1]) - padding;
+        return h -padding - yScale(d[1]);
      })
      .attr("data-date", (d) => d[0])
      .attr("data-gdp", (d) => d[1])
      .append("title") // Tooltip
-     .text((d) => d[0]);
+     .text((d) => d[0] + ", " + d[1]);
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
