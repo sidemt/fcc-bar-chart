@@ -46,18 +46,20 @@ function drawChart(dataset) {
 
   // Min and max value of the date and GDP
   // Use these values to define the domain of scales
-  const minX = 0
-  const maxX = dataset.length
+  // const minX = d3.min(dataset, (d) => d[0])
+  // const maxX = d3.max(dataset, (d) => d[0])
   const minY = d3.min(dataset, (d) => d[1])
   const maxY = d3.max(dataset, (d) => d[1])
-  console.log(minX);
-  console.log(maxX);
+  // console.log(minX);
+  // console.log(maxX);
   console.log(minY);
   console.log(maxY);
 
   // data-date
-  const xScale = d3.scaleLinear()
-                   .domain([minX, maxX])
+  const xScale = d3.scaleTime()
+                   .domain(d3.extent(dataset, function(d) {
+                     return new Date(d[0])
+                   }))
                    .range([padding, w - padding]);
 
   // data-gdp
@@ -77,7 +79,7 @@ function drawChart(dataset) {
      .enter()
      .append("rect")
      .attr("class", "bar") // required for the fcc test
-     .attr("x", (d, i) => i * bar_w + padding)
+     .attr("x", (d) => xScale(new Date(d[0])))
      .attr("y", (d) => {
         return yScale(d[1])
       }) // 下端にそろえる
