@@ -64,7 +64,6 @@ function drawChart(dataset) {
 
   // data-gdp
   // When you set the range for the y coordinates, the higher value (height minus padding) is the first argument, and the lower value is the second argument.
-  // The same for domain. The higher value comes first. ???
   const yScale = d3.scaleLinear()
                    .domain([0, maxY])
                    .range([h - padding, padding]);
@@ -79,6 +78,7 @@ function drawChart(dataset) {
      .enter()
      .append("rect")
      .attr("class", "bar") // required for the fcc test
+     .attr("fill", "#66cc99")
      .attr("x", (d) => xScale(new Date(d[0])))
      .attr("y", (d) => {
         return yScale(d[1])
@@ -89,8 +89,19 @@ function drawChart(dataset) {
      })
      .attr("data-date", (d) => d[0])
      .attr("data-gdp", (d) => d[1])
-     .append("title") // Tooltip
-     .text((d) => d[0] + ", " + d[1]);
+     // tooltip
+     .on("mouseover", function(d) {
+       tooltip.style("visibility", "visible")
+              .html("Date: " + d[0] + "<br>GDP: " + d[1])
+              .attr("data-date", d[0]); // required for fcc test
+     })
+     .on("mousemove", function(d) {
+       tooltip.style("top", (d3.event.pageY - 20) + "px")
+              .style("left", (d3.event.pageX + 10) + "px");
+     })
+     .on("mouseout", function(d) {
+       tooltip.style("visibility", "hidden");
+     });
 
   const xAxis = d3.axisBottom(xScale);
   const yAxis = d3.axisLeft(yScale);
@@ -104,6 +115,12 @@ function drawChart(dataset) {
      .attr("transform", "translate(" + padding + ", 0)")
      .attr("id", "y-axis") // required for the fcc test
      .call(yAxis);
+
+  // Tooltip
+  var tooltip = d3.select("body")
+                  .append("div")
+                  .attr("class", "tooltip")
+                  .attr("id", "tooltip"); // required for fcc test
 };
 
 // !! IMPORTANT README:
